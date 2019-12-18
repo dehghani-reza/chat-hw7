@@ -1,6 +1,6 @@
 package ir.mctab.hw7.question1;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Formatter;
@@ -10,24 +10,25 @@ public class ChatClient {
     public static void main(String[] args) {
 
         String ip="localhost";
-        int port=6070;
+        int port=8070;
         Socket socket;
 
         {
             try {
                 socket = new Socket(ip, port);
-                Scanner socketIn = new Scanner(socket.getInputStream());
-                Formatter socketOutput = new Formatter(socket.getOutputStream());
+                DataInputStream in =  new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+                DataOutputStream out =  new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
                 Scanner systemIn = new Scanner(System.in);
                 {
                     String text;
-                    text = systemIn.next();
-                    while (!text.equals("exit")) {
-                        socketOutput.format(text);
-                        socketOutput.flush();
-                        String received = socketIn.next();
-                        System.out.println(received);
-                    }
+                    do  {
+                        System.out.println("Write youre massage: ");
+                        text = systemIn.nextLine();
+                        out.writeUTF(text);
+                        out.flush();
+                        System.out.println(in.readUTF());
+                        System.out.flush();
+                    }while (!text.equals("exit"));
                 }
             } catch (UnknownHostException e) {
                 e.printStackTrace();
