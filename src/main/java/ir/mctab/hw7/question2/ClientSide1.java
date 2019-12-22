@@ -19,18 +19,22 @@ public class ClientSide1 {
         @Override
         public void run() {
             String text = "";
-                do {
-                    try {
-                        dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-                        text = dataInputStream.readUTF();
-                        System.out.println("said: " + text);
-                    } catch (IOException e) {
-                        e.getMessage();
-                    }
-                }while (!text.equals("exit"));
-
+            try {
+                dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            do {
+                try {
+                    text = dataInputStream.readUTF();
+                    System.out.println("said: " + text);
+                } catch (IOException e) {
+                    e.getMessage();
+                }
+            } while (!text.equals("exit"));
+
         }
+    }
 
 
     //*****************************************************************************
@@ -46,19 +50,23 @@ public class ClientSide1 {
 
         @Override
         public void run() {
-                String text = "";
-                do {
-                    try {
-                        dataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-                        text = scanner.nextLine();
-                        dataOutputStream.writeUTF(text);
-                        dataOutputStream.flush();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }while (!text.equals("exit"));
+            String text = "";
+            try {
+                dataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            do {
+                try {
+                    text = scanner.nextLine();
+                    dataOutputStream.writeUTF(text);
+                    dataOutputStream.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } while (!text.equals("exit"));
         }
+    }
 
 
     //*****************************************************************************
@@ -69,8 +77,8 @@ public class ClientSide1 {
         System.out.println("Connected");
         Thread out = new Thread(new DataOut(socket));
         Thread in = new Thread(new DataInput(socket));
-        Thread in1 = new Thread(new DataInput(socket));
-        Thread[] threads = {in,in1, out};
+
+        Thread[] threads = {in, out};
         for (Thread th : threads) {
             th.start();
         }
